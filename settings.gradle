@@ -1,0 +1,3 @@
+rootProject.name = 'graphoenix-redis'
+include 'graphoenix-redis-core'
+include 'graphoenix-redis-subscription'

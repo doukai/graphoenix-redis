@@ -1,0 +1,39 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group 'org.graphoenix'
+
+dependencies {
+    implementation platform("org.graphoenix:graphoenix-platform:$graphoenixVersion")
+    implementation platform("org.graphoenix:nozdormu-platform:$nozdormuVersion")
+
+    implementation 'org.graphoenix:graphoenix-core'
+    implementation 'org.graphoenix:nozdormu-inject'
+    implementation 'org.graphoenix:nozdormu-config'
+
+    api "io.lettuce:lettuce-core:$lettuceVersion"
+
+    annotationProcessor platform("org.graphoenix:graphoenix-platform:$graphoenixVersion")
+    annotationProcessor 'org.graphoenix:graphoenix-core'
+    annotationProcessor 'org.graphoenix:nozdormu-inject'
+    annotationProcessor 'org.graphoenix:nozdormu-config'
+    annotationProcessor 'org.graphoenix:nozdormu-interceptor'
+    annotationProcessor "io.lettuce:lettuce-core:$lettuceVersion"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
