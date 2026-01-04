@@ -1,6 +1,8 @@
 package io.graphoenix.redis.core.produces;
 
 import io.graphoenix.redis.core.config.RedisConfig;
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.MaintNotificationsConfig;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.reactive.RedisReactiveCommands;
@@ -29,8 +31,17 @@ public class RedisProducer {
     @Produces
     @ApplicationScoped
     public RedisClient redisClient() {
+        ClientOptions options = ClientOptions.builder()
+                .maintNotificationsConfig(
+                        redisConfig.getEnableMaintNotifications() ?
+                                MaintNotificationsConfig.enabled() :
+                                MaintNotificationsConfig.disabled()
+                )
+                .build();
         if (redisConfig.getUri() != null) {
-            return RedisClient.create(redisConfig.getUri());
+            RedisClient redisClient = RedisClient.create(redisConfig.getUri());
+            redisClient.setOptions(options);
+            return redisClient;
         }
         RedisURI redisURI = new RedisURI();
         redisURI.setHost(redisConfig.getHost());
@@ -58,7 +69,9 @@ public class RedisProducer {
         if (redisConfig.getTimeout() != null) {
             redisURI.setTimeout(Duration.of(redisConfig.getTimeout(), SECONDS));
         }
-        return RedisClient.create(redisURI);
+        RedisClient redisClient = RedisClient.create(redisURI);
+        redisClient.setOptions(options);
+        return redisClient;
     }
 
     @Produces

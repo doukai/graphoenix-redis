@@ -39,6 +39,9 @@ public class RedisConfig {
     @Optional
     private Integer timeout;
 
+    @Optional
+    private Boolean enableMaintNotifications = false;
+
     public String getUri() {
         return uri;
     }
@@ -125,5 +128,13 @@ public class RedisConfig {
 
     public void setTimeout(Integer timeout) {
         this.timeout = timeout;
+    }
+
+    public Boolean getEnableMaintNotifications() {
+        return enableMaintNotifications;
+    }
+
+    public void setEnableMaintNotifications(Boolean enableMaintNotifications) {
+        this.enableMaintNotifications = enableMaintNotifications;
     }
 }

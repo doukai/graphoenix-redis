@@ -16,7 +16,7 @@ dependencies {
     api "io.lettuce:lettuce-core:$lettuceVersion"
 
     annotationProcessor platform("org.graphoenix:graphoenix-platform:$graphoenixVersion")
-    annotationProcessor 'org.graphoenix:graphoenix-core'
+    annotationProcessor 'org.graphoenix:graphoenix-annotation-processor'
     annotationProcessor 'org.graphoenix:nozdormu-inject'
     annotationProcessor 'org.graphoenix:nozdormu-config'
     annotationProcessor 'org.graphoenix:nozdormu-interceptor'

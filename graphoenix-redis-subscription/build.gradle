@@ -18,7 +18,7 @@ dependencies {
     implementation 'org.graphoenix:nozdormu-interceptor'
 
     annotationProcessor project(':graphoenix-redis-core')
-    annotationProcessor 'org.graphoenix:graphoenix-core'
+    annotationProcessor 'org.graphoenix:graphoenix-annotation-processor'
     annotationProcessor 'org.graphoenix:graphoenix-subscription'
     annotationProcessor 'org.graphoenix:graphoenix-json'
     annotationProcessor 'org.graphoenix:nozdormu-inject'
