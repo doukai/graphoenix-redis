@@ -8,15 +8,16 @@ import io.graphoenix.spi.handler.QueryHandler;
 import io.graphoenix.spi.handler.SubscriptionDataListener;
 import io.graphoenix.spi.handler.SubscriptionHandler;
 import io.lettuce.core.pubsub.api.reactive.RedisPubSubReactiveCommands;
-import io.nozdormu.spi.context.PublisherBeanContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.literal.NamedLiteral;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.io.StringReader;
 import java.util.Optional;
@@ -30,17 +31,19 @@ public class RedisSubscriptionHandler implements SubscriptionHandler {
 
     private final QueryHandler queryHandler;
     private final DocumentManager documentManager;
+    private final Provider<Mono<SubscriptionDataListener>> subscriptionDataListenerMonoProvider;
     private final JsonProvider jsonProvider;
     private final RedisPubSubReactiveCommands<String, String> pubSubReactiveCommands;
 
     @Inject
     public RedisSubscriptionHandler(
             GraphQLConfig graphQLConfig,
-            DocumentManager documentManager,
+            DocumentManager documentManager, Provider<Mono<SubscriptionDataListener>> subscriptionDataListenerMonoProvider,
             JsonProvider jsonProvider,
             RedisPubSubReactiveCommands<String, String> pubSubReactiveCommands
     ) {
         this.documentManager = documentManager;
+        this.subscriptionDataListenerMonoProvider = subscriptionDataListenerMonoProvider;
         this.jsonProvider = jsonProvider;
         this.queryHandler = Optional.ofNullable(graphQLConfig.getDefaultOperationHandlerName())
                 .map(name -> CDI.current().select(QueryHandler.class, NamedLiteral.of(name)).get())
@@ -59,7 +62,7 @@ public class RedisSubscriptionHandler implements SubscriptionHandler {
                 .map(definition -> SUBSCRIPTION_CHANNEL_PREFIX + "." + definition.getPackageNameOrError() + "." + definition.getName())
                 .collect(Collectors.toSet());
 
-        return PublisherBeanContext.get(SubscriptionDataListener.class)
+        return subscriptionDataListenerMonoProvider.get()
                 .flatMapMany(listener ->
                         Flux.concat(
                                 queryHandler.query(operation),
